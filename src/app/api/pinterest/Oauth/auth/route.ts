@@ -7,10 +7,7 @@ export async function GET(req: NextRequest) {
     const SCOPE = process.env.PINTEREST_SCOPE;
     const STATE = generateRandomString();
     const RESPONCE_TYPE = "code";
-    // const URL = `https://api.pinterest.com/oauth/?response_type=${RESPONCE_TYPE}&redirect_uri=${REDIRECT_URI}&client_id=${CLIENT_ID}&scope=${SCOPE}&state=${STATE}`;
     const URL = `https://www.pinterest.com/oauth/?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&response_type=${RESPONCE_TYPE}&scope=${SCOPE}&state=${STATE}`;
-    // console.log('authUrl', URL,"redirected to pinterest");
-    const TokenURL= 'https://api.pinterest.com/v5/oauth/pina_AMAT3SIWAAX5UAQAGDAFIDBM2B7X5DYBACGSPQ4BUTVDGD5B6CSRIUVNXEDXWQXNPEY6RYUV32A7R266H5NTYXEPQI6YFTYA'
     return NextResponse.redirect(URL)
 }
 
