@@ -11,14 +11,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(URL)
 }
 
-// const pinterestAuthUrl = new URL('https://www.pinterest.com/oauth/');
-// pinterestAuthUrl.searchParams.append('response_type', 'code');
-// pinterestAuthUrl.searchParams.append('redirect_uri', process.env.PINTEREST_REDIRECT_URI);
-// pinterestAuthUrl.searchParams.append('client_id', process.env.PINTEREST_CLIENT_ID);
-// pinterestAuthUrl.searchParams.append('scope', 'read_public,write_public');
-// pinterestAuthUrl.searchParams.append('state', 'secure_random_state'); // Should be generated securely and validated in the callback
 
-// return NextResponse.redirect(pinterestAuthUrl);
 
 function generateRandomString() {
     return [...Array(30)].map(() => (~~(Math.random() * 36)).toString(36)).join('');
