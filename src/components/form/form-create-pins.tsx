@@ -1,4 +1,4 @@
-"use client";
+ "use client";
 
 import axios from "axios";
 import { Suspense, useEffect, useState } from "react";
@@ -43,8 +43,8 @@ export default function CreatePins() {
         //   parent_pin_id: "",
         //   note: ""
         // }
-      });
-
+    });
+ 
     const getProfilePinterest = async () => {
         try {
             const res = await axios.get("/api/pinterest/fetch/user");
@@ -81,24 +81,88 @@ export default function CreatePins() {
             console.error(error);
         }
     };
+    const convertImageToBase64 = async (imageUrl: string) => {
+        console.log(imageUrl, "imageUrl");
+        
+        try {
+            const response = await axios.get(imageUrl, {
+                responseType: 'arraybuffer'
+            });
+
+            const base64 = Buffer.from(response.data, 'binary').toString('base64');
+            console.log(base64, "base64");
+            
+            return base64;
+        } catch (error) {
+            console.error(error);
+        }
+    };
+    const convertImageToBase64node = async (imageFile: File) => {
+        return new Promise<string>((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(imageFile);
+            reader.onloadend = () => {
+                const base64data = reader.result as string;
+                resolve(base64data.split(",")[1]); // Remove the data URL prefix to get only base64 string
+            };
+            reader.onerror = (error) => reject(error);
+        });
+    };
+
+    
+    
+    
+ 
+        // const test = async () => {
+        //  const image= "/Image_49.png"   
+        //  console.log(image, "image");
+        //     const base64 = await convertImageToBase64(image);
+        //     console.log(base64, "base64");
+        //     return base64;
+        // }
+        // test()
+
     const onSubmit: SubmitHandler<createPin> = async (data, e) => {
         e?.preventDefault();
         console.log("entered the function onSubmit");
         console.log(data, "data");
-    
+
         try {
-          const res = await axios.post("/api/pinterest/create/pins", data, {
-            headers: {
-              "Content-Type": "application/json"
-            }
-          });
-    
-          console.log("res", res);
+            const res = await axios.post("/api/pinterest/create/pins", data
+
+            );
+
+            console.log("res", res);
         } catch (error) {
-          console.error(error);
+            console.error(error);
         }
-      };
+    };
+
     
+    const onSubmitI: SubmitHandler<createPin> = async (data, e) => {
+        e?.preventDefault();
+        console.log("entered the function onSubmitII");
+        console.log(data.media_source.data, "data from onSubmitII");
+
+        try {
+            //@ts-ignore
+            const image64node= await convertImageToBase64node(data.media_source.data[0]);
+            const imageBase64 = await convertImageToBase64(data.media_source.data);
+            console.log(image64node, "image64node");
+            
+            
+            const res = await axios.post("/api/pinterest/create/pins", {
+                ...data,
+                // image: imageBase64
+                image: image64node
+            });
+
+            console.log("res", res);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
 
     return (
         <Suspense fallback={<div>Loading...</div>}>
@@ -106,7 +170,7 @@ export default function CreatePins() {
                 <div className="gap-2 flex flex-col justify-between">
                     <h1 className="text-4xl font-bold">Create Pins</h1>
                     <Button className="border bg-blue-600 border-blue-500 text-white">
-                        <Link href="/api/pinterest/Oauth/auth">Login to Pinterest</Link>
+                        <Link href="/api/pinterest/Oauth/auth/">Login to Pinterest</Link>
                     </Button>
                     <Button
                         className="border bg-blue-600 border-blue-500 text-white"
@@ -146,41 +210,41 @@ export default function CreatePins() {
                     )}
                 </div>
                 <div>
-                <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="w-full flex flex-col gap-3"
-          >
-            <Label htmlFor="link">Link</Label>
-            <Input type="text" id="link" {...register("link")} />
-            <Label htmlFor="title">Title</Label>
-            <Input type="text" id="title" {...register("title")} />
-            <Label htmlFor="description">Description</Label>
-            <Input type="text" id="description" {...register("description")} />
-            <Label htmlFor="dominant_color">Dominant Color</Label>
-            <Input type="text" id="dominant_color" {...register("dominant_color")} />
-            <Label htmlFor="alt_text">Alt Text</Label>
-            <Input type="text" id="alt_text" {...register("alt_text")} />
-            <Label htmlFor="board_id">Board ID</Label>
-            <Input type="text" id="board_id" {...register("board_id")} />
-            <Label htmlFor="source_type">Source Type</Label>
-            <Input type="text" id="source_type" {...register("media_source.source_type")} />
-            <Label htmlFor="content_type">Content Type</Label>
-            <Input type="text" id="content_type" {...register("media_source.content_type")} />
-            <Label htmlFor="data">Data</Label>
-            <Input type="file" id="data" {...register("media_source.data")} />
-            <Label htmlFor="is_standard">Is Standard</Label>
-            <Input
-              type="checkbox"
-              id="is_standard"
-              {...register("media_source.is_standard")}
-            />
-            <Button
-              type="submit"
-              className="border bg-blue-600 border-blue-500 text-white active:bg-blue-950"
-            >
-              Submit
-            </Button>
-          </form>
+                    <form
+                        onSubmit={handleSubmit(onSubmitI)}
+                        className="w-full flex flex-col gap-3"
+                    >
+                        <Label htmlFor="link">Link</Label>
+                        <Input type="text" id="link" {...register("link")} />
+                        <Label htmlFor="title">Title</Label>
+                        <Input type="text" id="title" {...register("title")} />
+                        <Label htmlFor="description">Description</Label>
+                        <Input type="text" id="description" {...register("description")} />
+                        <Label htmlFor="dominant_color">Dominant Color</Label>
+                        <Input type="text" id="dominant_color" {...register("dominant_color")} />
+                        <Label htmlFor="alt_text">Alt Text</Label>
+                        <Input type="text" id="alt_text" {...register("alt_text")} />
+                        <Label htmlFor="board_id">Board ID</Label>
+                        <Input type="text" id="board_id" {...register("board_id")} />
+                        <Label htmlFor="source_type">Source Type</Label>
+                        <Input type="text" id="source_type" {...register("media_source.source_type")} />
+                        <Label htmlFor="content_type">Content Type</Label>
+                        <Input type="text" id="content_type" {...register("media_source.content_type")} />
+                        <Label htmlFor="data">Data</Label>
+                        <Input type="file" id="data" {...register("media_source.data")}  />
+                        <Label htmlFor="is_standard">Is Standard</Label>
+                        <Input
+                            type="checkbox"
+                            id="is_standard"
+                            {...register("media_source.is_standard")}
+                        />
+                        <Button
+                            type="submit"
+                            className="border bg-blue-600 border-blue-500 text-white active:bg-blue-950"
+                        >
+                            Submit
+                        </Button>
+                    </form>
 
 
                 </div>
@@ -189,71 +253,3 @@ export default function CreatePins() {
     );
 }
 
-{/* <form
-onSubmit={handleSubmit(onSubmit)}
-className="w-full flex flex-col gap-3"
->
-<Label htmlFor="link">Link</Label>
-<Input type="text" id="link" {...register("link")} />
-<Label htmlFor="title">Title</Label>
-<Input type="text" id="title" {...register("title")} />
-<Label htmlFor="description">Description</Label>
-<Input type="text" id="description" {...register("description")} />
-<Label htmlFor="dominant_color">Dominant Color</Label>
-<Input
-    type="text"
-    id="dominant_color"
-    {...register("dominant_color")}
-/>
-<Label htmlFor="alt_text">Alt Text</Label>
-<Input type="text" id="alt_text" {...register("alt_text")} />
-<Label htmlFor="board_id">Board ID</Label>
-<Input type="text" id="board_id" {...register("board_id")} />
-<Label htmlFor="board_section_id">Board Section ID</Label>
-<Input
-    type="text"
-    id="board_section_id"
-    {...register("board_section_id")}
-/>
-<Label htmlFor="media_type">Media Type</Label>
-<Input
-    type="text"
-    id="media_type"
-    {...register("media.media_type")}
-/>
-<Label htmlFor="source_type">Source Type</Label>
-<Input
-    type="text"
-    id="source_type"
-    {...register("media_source.source_type")}
-/>
-<Label htmlFor="content_type">Content Type</Label>
-<Input
-    type="text"
-    id="content_type"
-    {...register("media_source.content_type")}
-/>
-<Label htmlFor="data">Data</Label>
-<Input type="file" id="data" {...register("media_source.data")} />
-<Label htmlFor="is_standard">Is Standard</Label>
-<Input
-    type="checkbox"
-    id="is_standard"
-    {...register("media_source.is_standard")}
-/>
-<Label htmlFor="parent_pin_id">Parent Pin ID</Label>
-<Input
-    type="text"
-    id="parent_pin_id"
-    {...register("parent_pin_id")}
-/>
-<Label htmlFor="note">Note</Label>
-<Input type="text" id="note" {...register("note")} />
-
-<Button
-    type="submit"
-    className="border bg-blue-600 border-blue-500 text-white"
->
-    Submit
-</Button>
-</form> */}

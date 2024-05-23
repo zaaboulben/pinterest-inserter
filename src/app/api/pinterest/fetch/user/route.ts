@@ -2,7 +2,7 @@ import axios from "axios";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from 'next/headers';
 
-export async function GET(res:NextResponse, req:NextRequest){
+export async function GET(req: NextRequest) {
     const cookieStore=cookies()
   const  ACCESS_TOKEN= cookieStore.get('pinterest_access_token')
     const  REFRESH_TOKEN= cookieStore.get('pinterest_refresh_token')
